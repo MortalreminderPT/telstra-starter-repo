@@ -1,13 +1,11 @@
 Feature: Can SIM card be activated?
 
-  Scenario: 1255789453849037777 can be activated
-    Given I have a new SIM card with iccid "1255789453849037777"
-    Given I have email "test@gmail.com"
+  Scenario: functional sim can be activated
+    Given a functional sim card
     When I request to activate the SIM card
-    Then the sim card should be activated
+    Then the sim card should be activated and its state is recorded to the database
 
-  Scenario: 8944500102198304826 can not be activated
-    Given I have a new SIM card with iccid "8944500102198304826"
-    Given I have email "test@gmail.com"
+  Scenario: broken sim can not be activated
+    Given a broken sim card
     When I request to activate the SIM card
-    Then the sim card should not be activated
+    Then the sim card should not be activated and its state is recorded to the database

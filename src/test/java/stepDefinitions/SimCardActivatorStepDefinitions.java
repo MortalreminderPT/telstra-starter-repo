@@ -29,16 +29,14 @@ public class SimCardActivatorStepDefinitions {
     private SimCardActivateReq activateReq = new SimCardActivateReq();
     private Long activateRecordId;
 
-    @Given("I have a new SIM card with iccid {string}")
-    public void haveANewSimCard(String iccid) {
-        activateReq.setIccid(iccid);
-        System.out.println(activateReq);
+    @Given("a functional sim card")
+    public void aFunctionalSimCard() {
+        activateReq = new SimCardActivateReq("1255789453849037777", "test@gmail.com");
     }
 
-    @Given("I have email {string}")
-    public void haveAEmail(String email) {
-        activateReq.setCustomerEmail(email);
-        System.out.println(activateReq);
+    @Given("a broken sim card")
+    public void aBrokenSimCard() {
+        activateReq = new SimCardActivateReq("8944500102198304826", "test@gmail.com");
     }
 
     @When("I request to activate the SIM card")
@@ -59,7 +57,7 @@ public class SimCardActivatorStepDefinitions {
         System.out.println(activateRecordId);
     }
 
-    @Then("the sim card should be activated")
+    @Then("the sim card should be activated and its state is recorded to the database")
     public void theSimCardShouldBeActivated() {
         ResponseEntity<BaseResult<SimCardResp>> simCardResp =
                 restTemplate.exchange(
@@ -76,7 +74,7 @@ public class SimCardActivatorStepDefinitions {
         Assert.assertTrue(result.getData().isActive());
     }
 
-    @Then("the sim card should not be activated")
+    @Then("the sim card should not be activated and its state is recorded to the database")
     public void theSimCardShouldNotBeActivated() {
         ResponseEntity<BaseResult<SimCardResp>> simCardResp =
                 restTemplate.exchange(
