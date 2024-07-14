@@ -1,8 +1,16 @@
 package au.com.telstra.simcardactivator.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.util.Objects;
 
+@Entity
 public class SimCard {
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    Long id;
     String iccid;
     String customerEmail;
     boolean active;
@@ -40,23 +48,32 @@ public class SimCard {
         this.active = active;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SimCard simCard = (SimCard) o;
-        return active == simCard.active && Objects.equals(iccid, simCard.iccid) && Objects.equals(customerEmail, simCard.customerEmail);
+        return active == simCard.active && Objects.equals(id, simCard.id) && Objects.equals(iccid, simCard.iccid) && Objects.equals(customerEmail, simCard.customerEmail);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(iccid, customerEmail, active);
+        return Objects.hash(id, iccid, customerEmail, active);
     }
 
     @Override
     public String toString() {
         return "SimCard{" +
-                "iccid='" + iccid + '\'' +
+                "id=" + id +
+                ", iccid='" + iccid + '\'' +
                 ", customerEmail='" + customerEmail + '\'' +
                 ", active=" + active +
                 '}';
