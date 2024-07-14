@@ -3,6 +3,7 @@ package au.com.telstra.simcardactivator.service.impl;
 import au.com.telstra.simcardactivator.dto.SimCardActuatorActuateReq;
 import au.com.telstra.simcardactivator.dto.SimCardActuatorActuateResp;
 import au.com.telstra.simcardactivator.model.SimCard;
+import au.com.telstra.simcardactivator.record.SimCardRecord;
 import au.com.telstra.simcardactivator.repository.SimCardRepository;
 import au.com.telstra.simcardactivator.service.ISimCardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,12 @@ public class SimCardServiceImpl implements ISimCardService {
 
     @Override
     public SimCard getCard(Long cardId) {
-        Optional<SimCard> simCard = simCardRepository.findById(cardId);
-        return simCard.orElse(null);
+        Optional<SimCardRecord> simCard = simCardRepository.findById(cardId);
+        if (simCard.isEmpty()) {
+            return null;
+        }
+        SimCardRecord simCardRecord = simCard.get();
+        return new SimCard(simCardRecord.getIccid(), simCardRecord.getCustomerEmail(), simCardRecord.isActive());
     }
 
     @Override
@@ -43,7 +48,9 @@ public class SimCardServiceImpl implements ISimCardService {
             simCard.setActive(actuateResult.isSuccess());
         }
         // save in database
-        simCard = simCardRepository.save(simCard);
+        SimCardRecord simCardRecord = new SimCardRecord(simCard);
+        simCardRepository.save(simCardRecord);
+
         return simCard;
     }
 }
