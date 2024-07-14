@@ -4,6 +4,7 @@ import au.com.telstra.simcardactivator.SimCardActivator;
 import au.com.telstra.simcardactivator.dto.BaseResult;
 import au.com.telstra.simcardactivator.dto.SimCardActivateReq;
 import au.com.telstra.simcardactivator.dto.SimCardActivateResp;
+import au.com.telstra.simcardactivator.dto.SimCardResp;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -25,17 +26,24 @@ import org.springframework.test.context.ContextConfiguration;
 public class SimCardActivatorStepDefinitions {
     @Autowired
     private TestRestTemplate restTemplate;
-    private SimCardActivateReq activateReq;
-    private ResponseEntity<BaseResult<SimCardActivateResp>> activateResp;
+    private SimCardActivateReq activateReq = new SimCardActivateReq();
+    private Long activateRecordId;
 
-    @Given("I have a new SIM card with iccid {string} and email {string}")
-    public void haveANewSimCard(String iccid, String email) {
-        activateReq = new SimCardActivateReq(iccid, email);
+    @Given("I have a new SIM card with iccid {string}")
+    public void haveANewSimCard(String iccid) {
+        activateReq.setIccid(iccid);
+        System.out.println(activateReq);
+    }
+
+    @Given("I have email {string}")
+    public void haveAEmail(String email) {
+        activateReq.setCustomerEmail(email);
         System.out.println(activateReq);
     }
 
     @When("I request to activate the SIM card")
     public void requestToActivateTheSimCard() {
+        ResponseEntity<BaseResult<SimCardActivateResp>> activateResp;
         activateResp = restTemplate.exchange(
                 "http://localhost:8080/activate",
                 HttpMethod.POST,
@@ -43,23 +51,45 @@ public class SimCardActivatorStepDefinitions {
                 new ParameterizedTypeReference<BaseResult<SimCardActivateResp>>() {
                 }
         );
+        Assert.assertTrue(activateResp.hasBody());
+        BaseResult<SimCardActivateResp> result = activateResp.getBody();
+        Assert.assertEquals(result.getCode(), 200);
+        Assert.assertEquals(result.getMessage(), "Success");
+        activateRecordId = result.getData().getId();
+        System.out.println(activateRecordId);
     }
 
     @Then("the sim card should be activated")
     public void theSimCardShouldBeActivated() {
-        Assert.assertTrue(activateResp.hasBody());
-        BaseResult<SimCardActivateResp> result = activateResp.getBody();
+        ResponseEntity<BaseResult<SimCardResp>> simCardResp =
+                restTemplate.exchange(
+                        "http://localhost:8080/query?id=" + activateRecordId,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<BaseResult<SimCardResp>>() {
+                        }
+                );
+        Assert.assertTrue(simCardResp.hasBody());
+        BaseResult<SimCardResp> result = simCardResp.getBody();
         Assert.assertEquals(result.getCode(), 200);
         Assert.assertEquals(result.getMessage(), "Success");
-        Assert.assertTrue(result.getData().getSuccess());
+        Assert.assertTrue(result.getData().isActive());
     }
 
     @Then("the sim card should not be activated")
     public void theSimCardShouldNotBeActivated() {
-        Assert.assertTrue(activateResp.hasBody());
-        BaseResult<SimCardActivateResp> result = activateResp.getBody();
+        ResponseEntity<BaseResult<SimCardResp>> simCardResp =
+                restTemplate.exchange(
+                        "http://localhost:8080/query?id=" + activateRecordId,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<BaseResult<SimCardResp>>() {
+                        }
+                );
+        Assert.assertTrue(simCardResp.hasBody());
+        BaseResult<SimCardResp> result = simCardResp.getBody();
         Assert.assertEquals(result.getCode(), 200);
         Assert.assertEquals(result.getMessage(), "Success");
-        Assert.assertFalse(result.getData().getSuccess());
+        Assert.assertFalse(result.getData().isActive());
     }
 }

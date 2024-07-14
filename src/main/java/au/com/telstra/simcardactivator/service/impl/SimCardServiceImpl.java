@@ -49,8 +49,8 @@ public class SimCardServiceImpl implements ISimCardService {
         }
         // save in database
         SimCardRecord simCardRecord = new SimCardRecord(simCard);
-        simCardRepository.save(simCardRecord);
-
+        simCardRecord = simCardRepository.save(simCardRecord);
+        simCard.setId(simCardRecord.getId());
         return simCard;
     }
 }
