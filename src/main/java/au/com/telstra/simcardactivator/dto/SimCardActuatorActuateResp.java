@@ -3,7 +3,7 @@ package au.com.telstra.simcardactivator.dto;
 import java.util.Objects;
 
 public class SimCardActuatorActuateResp {
-    Boolean success;
+    boolean success;
 
     public SimCardActuatorActuateResp() {
     }
@@ -12,7 +12,7 @@ public class SimCardActuatorActuateResp {
         this.success = success;
     }
 
-    public Boolean getSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 

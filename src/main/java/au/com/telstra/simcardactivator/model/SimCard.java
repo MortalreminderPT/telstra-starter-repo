@@ -2,16 +2,18 @@ package au.com.telstra.simcardactivator.model;
 
 import java.util.Objects;
 
-public class SimCardActivate {
+public class SimCard {
     String iccid;
     String customerEmail;
+    boolean active;
 
-    public SimCardActivate() {
+    public SimCard() {
     }
 
-    public SimCardActivate(String iccid, String customerEmail) {
+    public SimCard(String iccid, String customerEmail, boolean active) {
         this.iccid = iccid;
         this.customerEmail = customerEmail;
+        this.active = active;
     }
 
     public String getIccid() {
@@ -30,24 +32,33 @@ public class SimCardActivate {
         this.customerEmail = customerEmail;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimCardActivate that = (SimCardActivate) o;
-        return Objects.equals(iccid, that.iccid) && Objects.equals(customerEmail, that.customerEmail);
+        SimCard simCard = (SimCard) o;
+        return active == simCard.active && Objects.equals(iccid, simCard.iccid) && Objects.equals(customerEmail, simCard.customerEmail);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(iccid, customerEmail);
+        return Objects.hash(iccid, customerEmail, active);
     }
 
     @Override
     public String toString() {
-        return "SimCardActivate{" +
+        return "SimCard{" +
                 "iccid='" + iccid + '\'' +
                 ", customerEmail='" + customerEmail + '\'' +
+                ", active=" + active +
                 '}';
     }
 }

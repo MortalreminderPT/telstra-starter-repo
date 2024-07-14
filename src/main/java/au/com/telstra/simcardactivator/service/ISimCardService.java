@@ -1,7 +1,7 @@
 package au.com.telstra.simcardactivator.service;
 
-import au.com.telstra.simcardactivator.model.SimCardActivate;
+import au.com.telstra.simcardactivator.model.SimCard;
 
 public interface ISimCardService {
-    boolean activateCard(SimCardActivate activate);
+    boolean activateCard(SimCard simCard);
 }

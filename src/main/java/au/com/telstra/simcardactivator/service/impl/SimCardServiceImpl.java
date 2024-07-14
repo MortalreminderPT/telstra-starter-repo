@@ -2,7 +2,7 @@ package au.com.telstra.simcardactivator.service.impl;
 
 import au.com.telstra.simcardactivator.dto.SimCardActuatorActuateReq;
 import au.com.telstra.simcardactivator.dto.SimCardActuatorActuateResp;
-import au.com.telstra.simcardactivator.model.SimCardActivate;
+import au.com.telstra.simcardactivator.model.SimCard;
 import au.com.telstra.simcardactivator.service.ISimCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,17 +18,19 @@ public class SimCardServiceImpl implements ISimCardService {
     private String simCardActuatorServiceUrl;
 
     @Override
-    public boolean activateCard(SimCardActivate activate) {
-        SimCardActuatorActuateReq actuateReq = new SimCardActuatorActuateReq(activate.getIccid());
+    public boolean activateCard(SimCard simCard) {
+        SimCardActuatorActuateReq actuateReq = new SimCardActuatorActuateReq(simCard.getIccid());
         String url = simCardActuatorServiceUrl + "/actuate";
         ResponseEntity<SimCardActuatorActuateResp> actuateResp =
                 restTemplate
                         .postForEntity(url, actuateReq, SimCardActuatorActuateResp.class);
         SimCardActuatorActuateResp actuateResult = actuateResp.getBody();
         if (actuateResult == null) {
-            return false;
+            simCard.setActive(false);
         } else {
-            return actuateResult.getSuccess();
+            simCard.setActive(actuateResult.isSuccess());
         }
+        // TODO: save in database
+        return simCard.isActive();
     }
 }
