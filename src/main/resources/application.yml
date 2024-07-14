@@ -1,0 +1,3 @@
+services:
+  sim-card-actuator-service:
+    url: http://localhost:8444
